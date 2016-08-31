@@ -1,4 +1,4 @@
-# Rebus.TODO
+# Rebus.LightInject
 
 Provides a LightInject container adapter for [Rebus](https://github.com/rebus-org/Rebus).
 
