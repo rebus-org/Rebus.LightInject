@@ -33,9 +33,8 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="LightInject, Version=4.1.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\LightInject.4.1.1\lib\net45\LightInject.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="LightInject, Version=5.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LightInject.5.0.1\lib\net45\LightInject.dll</HintPath>
     </Reference>
     <Reference Include="Rebus, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Rebus.3.0.0\lib\NET45\Rebus.dll</HintPath>

@@ -15,3 +15,7 @@
 ## 3.0.0
 
 * Update to Rebus 3
+
+## 4.0.0
+
+* Update to LightInject 5.0.1
