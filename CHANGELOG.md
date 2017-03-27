@@ -19,3 +19,8 @@
 ## 4.0.0
 
 * Update to LightInject 5.0.1
+
+## 5.0.0-b01
+
+* Update to Rebus 4
+* Add .NET Core support

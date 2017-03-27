@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using LightInject;
 using Rebus.Activation;
 using Rebus.Bus;
@@ -40,7 +41,11 @@ namespace Rebus.LightInject.Tests
 
         static IEnumerable<Type> GetHandlerInterfaces<THandler>() where THandler : class, IHandleMessages
         {
+#if NETSTANDARD1_6
+            return typeof(THandler).GetInterfaces().Where(i => i.GetTypeInfo().IsGenericType && i.GetGenericTypeDefinition() == typeof(IHandleMessages<>));
+#else
             return typeof(THandler).GetInterfaces().Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IHandleMessages<>));
+#endif
         }
     }
 }
