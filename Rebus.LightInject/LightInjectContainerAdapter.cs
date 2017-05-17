@@ -25,8 +25,7 @@ namespace Rebus.LightInject
         /// </summary>
         public LightInjectContainerAdapter(IServiceContainer container)
         {
-            if (container == null) throw new ArgumentNullException(nameof(container));
-            _serviceContainer = container;
+            _serviceContainer = container ?? throw new ArgumentNullException(nameof(container));
         }
 
         /// <summary>
@@ -56,6 +55,11 @@ namespace Rebus.LightInject
         /// </summary>
         public void SetBus(IBus bus)
         {
+            if (_serviceContainer.AvailableServices.Any(s => s.ServiceType == typeof(IBus)))
+            {
+                throw new InvalidOperationException("Cannot register IBus in this container because it has already been registered. If you want to host multiple Rebus instances in a single process, please use separate containers for them.");
+            }
+
             _serviceContainer.Register(factory => bus, new PerContainerLifetime());
             _serviceContainer.Register(factory => GetCurrentMessageContext());
             _serviceContainer.Register(factory => factory.Create<IBus>().Advanced.SyncBus);
