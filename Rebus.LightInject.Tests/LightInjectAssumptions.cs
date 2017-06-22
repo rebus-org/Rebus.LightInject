@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Rebus.Handlers;
+using Rebus.Tests.Contracts.Activation;
 using Rebus.Transport;
 
 namespace Rebus.LightInject.Tests
@@ -14,16 +15,15 @@ namespace Rebus.LightInject.Tests
         [Test]
         public void RegisterWorks()
         {
-            var factory = new LightInjectContainerAdapterFactory();
-
-            factory.RegisterHandlerType<SomeHandler>();
-            factory.RegisterHandlerType<AnotherHandler>();
+            var activationCtx = new LightInjectActivationContext();
 
             using (var scope = new RebusTransactionScope())
             {
                 const string stringMessage = "bimse";
-                
-                var handlers = factory.GetActivator().GetHandlers(stringMessage, scope.TransactionContext).Result.ToList();
+
+                var activator = activationCtx.CreateActivator(handlerReg => handlerReg.Register<SomeHandler>().Register<AnotherHandler>());
+
+                var handlers = activator.GetHandlers(stringMessage, scope.TransactionContext).Result.ToList();
                 
                 Assert.That(handlers.Count, Is.EqualTo(2));
             }

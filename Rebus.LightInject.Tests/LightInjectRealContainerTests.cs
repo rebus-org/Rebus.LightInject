@@ -4,7 +4,7 @@ using Rebus.Tests.Contracts.Activation;
 namespace Rebus.LightInject.Tests
 {
     [TestFixture]
-    public class LightInjectRealContainerTests : RealContainerTests<LightInjectContainerAdapterFactory>
+    public class LightInjectRealContainerTests : RealContainerTests<LightInjectActivationContext>
     {
     }
 }
