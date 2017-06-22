@@ -36,8 +36,8 @@
     <ProjectReference Include="..\Rebus.LightInject\Rebus.LightInject.csproj" />
     <PackageReference Include="lightinject" Version="5.0.2" />
     <PackageReference Include="nunit" Version="3.6.1" />
-    <PackageReference Include="rebus" Version="4.0.0-b10" />
-    <PackageReference Include="rebus.tests.contracts" Version="4.0.0-b10" />
+    <PackageReference Include="rebus" Version="4.0.0-b14" />
+    <PackageReference Include="rebus.tests.contracts" Version="4.0.0-b14" />
   </ItemGroup>
   <ItemGroup>
     <None Update="azure_storage_connection_string.txt">

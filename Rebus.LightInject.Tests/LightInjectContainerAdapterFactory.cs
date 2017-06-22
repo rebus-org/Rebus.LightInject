@@ -5,47 +5,83 @@ using System.Reflection;
 using LightInject;
 using Rebus.Activation;
 using Rebus.Bus;
+using Rebus.Config;
 using Rebus.Handlers;
 using Rebus.Tests.Contracts.Activation;
 
 namespace Rebus.LightInject.Tests
 {
-    public class LightInjectContainerAdapterFactory : IContainerAdapterFactory
+    public class LightInjectActivationContext : IActivationContext
     {
-        readonly ServiceContainer _serviceContainer = new ServiceContainer();
-
-        public IHandlerActivator GetActivator()
+        public IHandlerActivator CreateActivator(Action<IHandlerRegistry> configureHandlers, out IActivatedContainer container)
         {
-            return new LightInjectContainerAdapter(_serviceContainer);
+            var lightInjectContainer = new ServiceContainer();
+            configureHandlers(new HandlerRegistry(lightInjectContainer));
+
+            container = new ActivatedContainer(lightInjectContainer);
+
+            return new LightInjectContainerAdapter(lightInjectContainer);
         }
 
-        public void RegisterHandlerType<THandler>() where THandler : class, IHandleMessages
+        public IBus CreateBus(Action<IHandlerRegistry> configureHandlers, Func<RebusConfigurer, RebusConfigurer> configureBus, out IActivatedContainer container)
         {
-            foreach (var handlerInterfaceType in GetHandlerInterfaces<THandler>())
+            var lightInjectContainer = new ServiceContainer();
+            configureHandlers(new HandlerRegistry(lightInjectContainer));
+
+            container = new ActivatedContainer(lightInjectContainer);
+
+            return configureBus(Configure.With(new LightInjectContainerAdapter(lightInjectContainer))).Start();
+        }
+
+        private class HandlerRegistry : IHandlerRegistry
+        {
+            private readonly ServiceContainer _serviceContainer;
+
+            public HandlerRegistry(ServiceContainer serviceContainer)
             {
-                var componentName = $"{typeof (THandler).FullName}:{handlerInterfaceType.FullName}";
-
-                _serviceContainer.Register(handlerInterfaceType, typeof(THandler), componentName);
+                _serviceContainer = serviceContainer;
             }
-        }
 
-        public void CleanUp()
-        {
-            _serviceContainer.Dispose();
-        }
+            public IHandlerRegistry Register<THandler>() where THandler : class, IHandleMessages
+            {
+                foreach (var handlerInterfaceType in GetHandlerInterfaces<THandler>())
+                {
+                    var componentName = $"{typeof(THandler).FullName}:{handlerInterfaceType.FullName}";
 
-        public IBus GetBus()
-        {
-            return _serviceContainer.GetInstance<IBus>();
-        }
+                    _serviceContainer.Register(handlerInterfaceType, typeof(THandler), componentName);
+                }
 
-        static IEnumerable<Type> GetHandlerInterfaces<THandler>() where THandler : class, IHandleMessages
-        {
+                return this;
+            }
+
+            static IEnumerable<Type> GetHandlerInterfaces<THandler>() where THandler : class, IHandleMessages
+            {
 #if NETSTANDARD1_6
             return typeof(THandler).GetInterfaces().Where(i => i.GetTypeInfo().IsGenericType && i.GetGenericTypeDefinition() == typeof(IHandleMessages<>));
 #else
-            return typeof(THandler).GetInterfaces().Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IHandleMessages<>));
+                return typeof(THandler).GetInterfaces().Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IHandleMessages<>));
 #endif
+            }
+        }
+
+        private class ActivatedContainer : IActivatedContainer
+        {
+            private readonly ServiceContainer _serviceContainer;
+
+            public ActivatedContainer(ServiceContainer serviceContainer)
+            {
+                _serviceContainer = serviceContainer;
+            }
+
+            public void Dispose()
+            {
+                _serviceContainer.Dispose();
+            }
+
+            public IBus ResolveBus()
+            {
+                return _serviceContainer.GetInstance<IBus>();
+            }
         }
     }
 }
