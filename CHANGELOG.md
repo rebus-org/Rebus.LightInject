@@ -20,11 +20,10 @@
 
 * Update to LightInject 5.0.1
 
-## 5.0.0-b04
+## 5.0.0
 
 * Update to Rebus 4
 * Add .NET Core support
-* Update deps to b10
 * Update contracts dep - thanks [trevorreeves]
 
 [trevorreeves]: https://github.com/trevorreeves
