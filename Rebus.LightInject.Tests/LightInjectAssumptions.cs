@@ -5,45 +5,44 @@ using NUnit.Framework;
 using Rebus.Handlers;
 using Rebus.Tests.Contracts.Activation;
 using Rebus.Transport;
+// ReSharper disable ClassNeverInstantiated.Local
 
-namespace Rebus.LightInject.Tests
+namespace Rebus.LightInject.Tests;
+
+[TestFixture]
+public class LightInjectAssumptions
 {
-    [TestFixture]
-    public class LightInjectAssumptions
+    [Test]
+    public void RegisterWorks()
     {
+        var activationCtx = new LightInjectActivationContext();
 
-        [Test]
-        public void RegisterWorks()
+        using (var scope = new RebusTransactionScope())
         {
-            var activationCtx = new LightInjectActivationContext();
+            const string stringMessage = "bimse";
 
-            using (var scope = new RebusTransactionScope())
-            {
-                const string stringMessage = "bimse";
+            var activator = activationCtx.CreateActivator(handlerReg => handlerReg.Register<SomeHandler>().Register<AnotherHandler>());
 
-                var activator = activationCtx.CreateActivator(handlerReg => handlerReg.Register<SomeHandler>().Register<AnotherHandler>());
-
-                var handlers = activator.GetHandlers(stringMessage, scope.TransactionContext).Result.ToList();
+            var handlers = activator.GetHandlers(stringMessage, scope.TransactionContext).Result.ToList();
                 
-                Assert.That(handlers.Count, Is.EqualTo(2));
-            }
+            Assert.That(handlers.Count, Is.EqualTo(2));
         }
-
-        class SomeHandler : IHandleMessages<string>
-        {
-            public Task Handle(string message)
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        class AnotherHandler : IHandleMessages<string>
-        {
-            public Task Handle(string message)
-            {
-                throw new NotImplementedException();
-            }
-        }
-
     }
+
+    class SomeHandler : IHandleMessages<string>
+    {
+        public Task Handle(string message)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    class AnotherHandler : IHandleMessages<string>
+    {
+        public Task Handle(string message)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
 }
