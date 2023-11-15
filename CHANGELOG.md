@@ -20,7 +20,7 @@
 * Add .NET Core support
 * Update contracts dep - thanks [trevorreeves]
 
-## 6.0.0-alpha01
+## 6.0.0
 * Update to Rebus 8
 
 [trevorreeves]: https://github.com/trevorreeves
